@@ -29,9 +29,15 @@ public class TicketConfiguracion : IEntityTypeConfiguration<Ticket>
             .HasForeignKey(t => t.ClienteId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        b.HasOne(t => t.Agente)
+            .WithMany(a => a.Tickets)
+            .HasForeignKey(t => t.AgenteId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         // Índices pensados para los filtros que realmente usa la pantalla.
         b.HasIndex(t => new { t.Estado, t.Prioridad });
         b.HasIndex(t => t.FechaCreacion);
         b.HasIndex(t => t.ClienteId);
+        b.HasIndex(t => t.AgenteId);
     }
 }

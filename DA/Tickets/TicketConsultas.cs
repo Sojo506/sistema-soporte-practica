@@ -32,6 +32,11 @@ internal static class TicketConsultas
             var clienteId = f.ClienteId.Value;
             q = q.Where(t => t.ClienteId == clienteId);
         }
+        if (f.AgenteId.HasValue)
+        {
+            var agenteId = f.AgenteId.Value;
+            q = q.Where(t => t.AgenteId == agenteId);
+        }
         if (f.Desde.HasValue)
         {
             var desde = f.Desde.Value.Date;

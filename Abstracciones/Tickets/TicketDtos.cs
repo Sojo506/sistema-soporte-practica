@@ -45,6 +45,7 @@ public record TicketDto(
     int ClienteId,
     string? ClienteNombre,
     int? AgenteId,
+    string? AgenteNombre,
     int Reaperturas,
     DateTime FechaCreacion,
     DateTime FechaActualizacion,
@@ -62,6 +63,9 @@ public class TicketFiltro : ParametrosPaginacion, IValidatableObject
 
     [Range(1, int.MaxValue)]
     public int? ClienteId { get; set; }
+
+    [Range(1, int.MaxValue)]
+    public int? AgenteId { get; set; }
 
     public DateTime? Desde { get; set; }
     public DateTime? Hasta { get; set; }

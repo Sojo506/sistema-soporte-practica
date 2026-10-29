@@ -1,7 +1,9 @@
+using Abstracciones.Agentes;
 using Abstracciones.Clientes;
 using Abstracciones.Comentarios;
 using Abstracciones.Etiquetas;
 using Abstracciones.Tickets;
+using Flujo.Agentes;
 using Flujo.Clientes;
 using Flujo.Comentarios;
 using Flujo.Etiquetas;
@@ -18,6 +20,7 @@ public static class RegistroFlujo
         servicios.AddSingleton(TimeProvider.System);
 
         servicios.AddScoped<IClienteFlujo, ClienteFlujo>();
+        servicios.AddScoped<IAgenteFlujo, AgenteFlujo>();
         servicios.AddScoped<IEtiquetaFlujo, EtiquetaFlujo>();
         servicios.AddScoped<IComentarioFlujo, ComentarioFlujo>();
         servicios.AddScoped<ITicketFlujo, TicketFlujo>();

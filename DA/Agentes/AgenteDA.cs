@@ -1,11 +1,9 @@
-﻿using Abstracciones.Agentes;
-using Abstracciones.Clientes;
+using Abstracciones.Agentes;
 using Abstracciones.Comunes;
 using Abstracciones.Excepciones;
+using DA.Comunes;
 using DA.Contexto;
 using Microsoft.EntityFrameworkCore;
-
-// completa todas las operaciones de la interfaz IAgenteDA, incluyendo la paginación de agentes activos y la creación de nuevos agentes.
 
 namespace DA.Agentes
 {
@@ -15,35 +13,54 @@ namespace DA.Agentes
 
         public AgenteDA(SistemaSoporteContexto ctx) => _ctx = ctx;
 
-        public Task<Agente> ObtenerAsync(int id, CancellationToken ct)
+        public Task<Agente?> ObtenerAsync(int id, CancellationToken ct)
         {
-            // AsNoTracking: solo leemos, EF no necesita vigilar los objetos.
             return _ctx.Agentes.AsNoTracking().FirstOrDefaultAsync(a => a.Id == id, ct);
         }
 
-        public Task<bool> ActualizarAsync(Agente agente, CancellationToken ct)
+        public async Task<bool> ActualizarAsync(Agente datos, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            var existente = await _ctx.Agentes.FirstOrDefaultAsync(a => a.Id == datos.Id, ct);
+            if (existente is null) return false;
+
+            existente.Nombre = datos.Nombre;
+            existente.Correo = datos.Correo;
+            existente.Telefono = datos.Telefono;
+            existente.CapacidadMaxima = datos.CapacidadMaxima;
+
+            try
+            {
+                await _ctx.SaveChangesAsync(ct);
+            }
+            catch (DbUpdateException ex) when (ErroresSql.EsDuplicado(ex))
+            {
+                throw new ConflictoException($"Ya existe otro agente con el correo '{datos.Correo}'.");
+            }
+            return true;
         }
 
         public async Task<Agente> CrearAsync(Agente agente, CancellationToken ct)
         {
-
             _ctx.Agentes.Add(agente);
             try
             {
                 await _ctx.SaveChangesAsync(ct);
                 return agente;
             }
-            catch (Exception)
+            catch (DbUpdateException ex) when (ErroresSql.EsDuplicado(ex))
             {
-                throw new ConflictoException($"No se pudo crear el agente con correo {agente.Correo}. Puede que ya exista un agente con ese correo.");
+                throw new ConflictoException($"Ya existe un agente con el correo '{agente.Correo}'.");
             }
         }
 
-        public Task<bool> EliminarAsync(int id, CancellationToken ct)
+        public async Task<bool> EliminarAsync(int id, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            var existente = await _ctx.Agentes.FirstOrDefaultAsync(a => a.Id == id, ct);
+            if (existente is null) return false;
+
+            existente.Activo = false;
+            await _ctx.SaveChangesAsync(ct);
+            return true;
         }
 
         public async Task<ResultadoPaginado<Agente>> ObtenerActivosPaginadoAsync(AgenteFiltro filtro, CancellationToken ct)

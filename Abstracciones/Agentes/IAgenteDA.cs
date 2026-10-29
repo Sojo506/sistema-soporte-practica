@@ -1,11 +1,10 @@
-﻿using Abstracciones.Comunes;
+using Abstracciones.Comunes;
 
 namespace Abstracciones.Agentes
 {
     public interface IAgenteDA
     {
-        // get por id
-        Task<Agente> ObtenerAsync(int id, CancellationToken ct);
+        Task<Agente?> ObtenerAsync(int id, CancellationToken ct);
         // get para agentes activos y paginados
         Task<ResultadoPaginado<Agente>> ObtenerActivosPaginadoAsync(AgenteFiltro filtro, CancellationToken ct);
         // crear agente

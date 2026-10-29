@@ -1,3 +1,4 @@
+using Abstracciones.Agentes;
 using Abstracciones.Clientes;
 using Abstracciones.Comentarios;
 using Abstracciones.Etiquetas;
@@ -57,6 +58,14 @@ public class SemillaDatos
         };
         _ctx.Clientes.AddRange(clientes);
 
+        var agentes = new[]
+        {
+            new Agente { Nombre = "Roberto Castro", Correo = "roberto@soporte.com", Telefono = "88881111", CapacidadMaxima = 15, Activo = true, FechaRegistro = ahora },
+            new Agente { Nombre = "Valeria Solís", Correo = "valeria@soporte.com", Telefono = "88882222", CapacidadMaxima = 20, Activo = true, FechaRegistro = ahora },
+            new Agente { Nombre = "Andrés Gómez", Correo = "andres@soporte.com", Telefono = "88883333", CapacidadMaxima = 10, Activo = true, FechaRegistro = ahora }
+        };
+        _ctx.Agentes.AddRange(agentes);
+
         var etiquetas = new[]
         {
             new Etiqueta { Nombre = "Facturación", Color = "#0d6efd" },
@@ -67,7 +76,7 @@ public class SemillaDatos
             new Etiqueta { Nombre = "Consulta", Color = "#6c757d" }
         };
         _ctx.Etiquetas.AddRange(etiquetas);
-        await _ctx.SaveChangesAsync(ct); // aquí se generan los Id
+        await _ctx.SaveChangesAsync(ct);
 
         var titulos = new[]
         {

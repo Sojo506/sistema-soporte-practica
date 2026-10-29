@@ -232,6 +232,8 @@ namespace DA.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AgenteId");
+
                     b.HasIndex("ClienteId");
 
                     b.HasIndex("Codigo")
@@ -276,13 +278,25 @@ namespace DA.Migrations
 
             modelBuilder.Entity("Abstracciones.Tickets.Ticket", b =>
                 {
+                    b.HasOne("Abstracciones.Agentes.Agente", "Agente")
+                        .WithMany("Tickets")
+                        .HasForeignKey("AgenteId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Abstracciones.Clientes.Cliente", "Cliente")
                         .WithMany("Tickets")
                         .HasForeignKey("ClienteId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("Agente");
+
                     b.Navigation("Cliente");
+                });
+
+            modelBuilder.Entity("Abstracciones.Agentes.Agente", b =>
+                {
+                    b.Navigation("Tickets");
                 });
 
             modelBuilder.Entity("Abstracciones.Clientes.Cliente", b =>

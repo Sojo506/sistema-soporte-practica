@@ -1,3 +1,4 @@
+using Abstracciones.Agentes;
 using Abstracciones.Clientes;
 using Abstracciones.Etiquetas;
 using Abstracciones.Excepciones;
@@ -12,11 +13,14 @@ public class TicketFlujoTests
     private readonly Mock<ITicketDA> _da = new();
     private readonly Mock<IClienteDA> _clienteDA = new();
     private readonly Mock<IEtiquetaDA> _etiquetaDA = new();
+    private readonly Mock<IAgenteDA> _agenteDA = new();
     private readonly TicketFlujo _flujo;
 
     public TicketFlujoTests()
     {
-        _flujo = new TicketFlujo(_da.Object, _clienteDA.Object, _etiquetaDA.Object, TimeProvider.System);
+        _agenteDA.Setup(a => a.ObtenerAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                 .ReturnsAsync(new Agente { Id = 1, Activo = true });
+        _flujo = new TicketFlujo(_da.Object, _clienteDA.Object, _etiquetaDA.Object, _agenteDA.Object, TimeProvider.System);
     }
 
     // Deja un ticket en el "DA" para que Flujo lo encuentre, tanto para leer como para actualizar.

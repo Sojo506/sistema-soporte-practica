@@ -1,3 +1,4 @@
+using Abstracciones.Agentes;
 using Abstracciones.Clientes;
 using Abstracciones.Comunes;
 using Abstracciones.Etiquetas;
@@ -25,13 +26,15 @@ public class TicketFlujo : ITicketFlujo
     private readonly ITicketDA _da;
     private readonly IClienteDA _clienteDA;
     private readonly IEtiquetaDA _etiquetaDA;
+    private readonly IAgenteDA _agenteDA;
     private readonly TimeProvider _reloj;
 
-    public TicketFlujo(ITicketDA da, IClienteDA clienteDA, IEtiquetaDA etiquetaDA, TimeProvider reloj)
+    public TicketFlujo(ITicketDA da, IClienteDA clienteDA, IEtiquetaDA etiquetaDA, IAgenteDA agenteDA, TimeProvider reloj)
     {
         _da = da;
         _clienteDA = clienteDA;
         _etiquetaDA = etiquetaDA;
+        _agenteDA = agenteDA;
         _reloj = reloj;
     }
 
@@ -93,6 +96,15 @@ public class TicketFlujo : ITicketFlujo
 
         if (!Transiciones[ticket.Estado].Contains(nuevoEstado))
             throw new ConflictoException($"No se puede pasar un ticket de {ticket.Estado} a {nuevoEstado}.");
+
+        if (dto.AgenteId.HasValue)
+        {
+            var agenteEntity = await _agenteDA.ObtenerAsync(dto.AgenteId.Value, ct);
+            if (agenteEntity is null)
+                throw new ValidacionNegocioException($"El agente {dto.AgenteId.Value} no existe.");
+            if (!agenteEntity.Activo)
+                throw new ConflictoException($"El agente {dto.AgenteId.Value} no está activo.");
+        }
 
         var agente = dto.AgenteId ?? ticket.AgenteId;
         var prioridad = dto.Prioridad ?? ticket.Prioridad;
